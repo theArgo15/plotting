@@ -20,7 +20,7 @@ def RHPlotter(df):
             if "Humidity" in column:
                 ax.plot('Time', column, data=df, label=column)
         ax.set_xlabel('Time (s)')
-        ax.set_ylabel('Temperature ($^\circ$C)')
+        ax.set_ylabel('Relative Humidity (%)')
         ax.set_title('Title')
         ax.legend()
     
