@@ -30,24 +30,41 @@ def featurePlotter(df, feature):
                 ax.plot('Time', column, data=df, label=column)
     ax.set_xlabel('Time (s)')
     ax.set_ylabel(f'{feature} ($^\circ$C) or (%)')
-    ax.set_title('Temperature 3 Hour Job 30Jun SVP0 Control')
+    ax.set_title('Control')
     ax.legend()
 
 
 
 def splitFeaturePlotter(df, feature):
-    fig, axs = plt.subplots(2,2, sharex=True, sharey=True)
+    #6 total graphs: 4 engines, EP bay, SVP tracked stuff
+    fig, axs = plt.subplots(3,2, sharex=True, sharey=True)
     jobFinishTime = df['Time'].max()
     for i in range(4):
         axs[0, 0].plot(f'Logger{i+1}Time', f'Logger{i+1}{feature}', data=df, label = f'Logger{i+1}')
         axs[0, 1].plot(f'Logger{i+5}Time', f'Logger{i+5}{feature}', data=df, label = f'Logger{i+5}')
         axs[1, 0].plot(f'Logger{i+9}Time', f'Logger{i+9}{feature}', data=df, label = f'Logger{i+9}')
         axs[1, 1].plot(f'Logger{i+13}Time', f'Logger{i+13}{feature}', data=df, label = f'Logger{i+13}')
+    for i in range(3):
+        try:
+            axs[2, 0].plot(f'Logger{i+17}Time', f'Logger{i+17}{feature}', data=df, label = f'Logger{i+17}')
+        except:
+            raise Warning('Logger 19 not found')
+    #some terrible logic for getting ECS supply, return, and EP feature 
+    for column in df.columns:
+        if feature in column:
+            if 'Logger' in column:
+                pass
+            else:
+                axs[2,1].plot('Time', column, data=df, label=column)
 
+    plotTitles = ['Engine 1', 'Engine 2', 'Engine 3', 'Engine 4', 'Electronics Bay', 'SVP Tracked Data']
+    featureUnits = {'Temp': '($^\circ$C)', 'Humidity': '(%)'}
     for i, ax in enumerate(axs.reshape(-1)):
         ax.axvline(x=jobFinishTime)
-        ax.set_title(f'Engine {i+1}')
+        ax.set_title(plotTitles[i])
         ax.legend()
+        ax.set_xlabel('Time (s)')
+        ax.set_ylabel(feature + featureUnits[feature])
     return jobFinishTime
 
 def PositionSplitFeaturePlotter(df, feature):
@@ -78,9 +95,9 @@ if __name__ == "__main__":
     
     #featurePlotter(dataLocation,'Temp')
     #jobFinishTime = PositionSplitFeaturePlotter(dataLocation, 'Temp')
-    jobFinishTime = splitFeaturePlotter(dataLocation, 'Temp')
+    jobFinishTime = splitFeaturePlotter(dataLocation, 'Humidity')
     plt.xlim([0,jobFinishTime+900])
-    plt.ylim([20,27])
-    plt.suptitle('Title')
+    #plt.ylim([20,27])
+    plt.suptitle('07Jul Control Data')
     plt.show(block=True)
     #plt.savefig(Path(r"C:\Users\TonyWitt\OneDrive - Evolve\Pictures")/str(job)[-5:])
