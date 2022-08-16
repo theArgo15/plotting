@@ -19,6 +19,7 @@ def timeSync(jobStartTime, filePath):
     for i in range(19):
         # Add column for each logger time, logger temp, logger RH
         # Logger time starts as datetime. Convert into epoch time by subtracting jan 1 1970 and displaying total seconds, then subtract jobStartTime to get synced time
+        print(f'Syncing Logger {i+1}')
         externalData = pd.read_csv(filePath/f'Logger{i+1}.txt', skiprows=7, sep='\t', parse_dates=[['DATE','TIME']])
         svp2Job[f'Logger{i+1}DateTime'] = externalData['DATE_TIME'].dt.tz_localize(tz='US/Central')
         svp2Job[f'Logger{i+1}Time'] =  svp2Job[f'Logger{i+1}DateTime'].astype('int64')//1e9 - jobStartTime
@@ -38,9 +39,12 @@ def timeSync(jobStartTime, filePath):
 
 if __name__ == "__main__":
     #start time in unix timestamp is the first part of the title of the xl sheet
-    jobStartTime = 1658857168
+    jobsData = pd.read_csv('jobsData.csv', index_col='Job')
+    #input
+    job = 1660319120
+    jobStartTime = job
+
+    job = jobsData.loc[job, 'Path']
+    job = Path(job)
     #File path will need to be updated for each folder of data
-    dataFolder = '26Jul'
-    filePath = filePath = Path(r'C:\Users\TonyWitt\OneDrive - Evolve\Documents\Flir Logs')
-    filePath = filePath/dataFolder
-    timeSync(jobStartTime, filePath)
+    timeSync(jobStartTime, job)

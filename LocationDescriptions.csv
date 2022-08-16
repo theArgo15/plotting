@@ -18,3 +18,7 @@ Logger16,Engine 4,BC Roller Return Side
 Logger17,EB Engine 4,EB Engine 4
 Logger18,EB Engine 0,EB Engine 0
 Logger19,Build Area,Build Area
+EP,EP,EP
+ECSReturn,ECSReturn,ECSReturn
+ECSSupply,ECSSupply,ECSSupply
+room,room,room

@@ -55,6 +55,8 @@ def splitAttributePlotter(df, attribute):
         if attribute in column:
             if 'Logger' in column:
                 pass
+            elif 'room' in column:
+                axs[2,0].plot('roomTime', column, data = df, label=column)
             else:
                 axs[2,1].plot('Time', column, data=df, label=column)
 
@@ -84,21 +86,31 @@ def PositionSplitAttributePlotter(df, attribute):
     return jobFinishTime
 
 if __name__ == "__main__":
-    jobsData = pd.read_csv('jobsData.csv', index_col='Date')
+    jobsData = pd.read_csv('jobsData.csv', index_col='Job')
     #input
-    job = 'July26'
+    job = 1660244076
+    #this is either Temp or Humidity
+    plotAttribute ='Temp'
+    jobDate = jobsData.loc[job, 'Date']
+    jobDescription = jobsData.loc[job, 'Description']
+    plotTitle = f'{jobDate} Data ({jobDescription})'
 
     job = jobsData.loc[job, 'Path']
     job = Path(job)
     dataLocation = pd.read_csv(job/'syncedData.csv')
     
-    #attributePlotter(dataLocation,'Temp')
-    #jobFinishTime = PositionSplitAttributePlotter(dataLocation, 'Temp')
-    jobFinishTime = splitAttributePlotter(dataLocation, 'Humidity')
-    plt.xlim([0,jobFinishTime+900])
-    #plt.ylim([20,27])
-    #Limits for RH
-    plt.ylim([20,50])
-    plt.suptitle('26Jul Data (Sheetmetal Shroud)')
+
+    jobFinishTime = splitAttributePlotter(dataLocation, plotAttribute)
+    #plt.xlim([0,jobFinishTime+900])
+    #this x limit is 900 seconds after the end of the FAT build
+    plt.xlim([0,12195.52+900])
+    if plotAttribute == 'Temp':
+        plt.ylim([20,27])
+    elif plotAttribute == 'Humidity':
+        #Limits for RH
+        plt.ylim([20,50])
+    else:
+        print('Plot attribute not recognized')
+    plt.suptitle(plotTitle)
     plt.show(block=True)
     #plt.savefig(Path(r"C:\Users\TonyWitt\OneDrive - Evolve\Pictures")/'test')
