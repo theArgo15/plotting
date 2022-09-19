@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
+import sys
 import referenceVariable
 
 def attributePlotter(df, attribute):
@@ -86,11 +87,14 @@ def PositionSplitAttributePlotter(df, attribute):
     return jobFinishTime
 
 if __name__ == "__main__":
+    # Use command line arguments: 
+    # py allPlot.py jobNumber plotAttribute 
+    # Plot attributes are Temp, Humidity, or Dew Point')
     jobsData = pd.read_csv('jobsData.csv', index_col='Job')
     #input
-    job = 1660244076
-    #this is either Temp or Humidity
-    plotAttribute ='Temp'
+    job = int(sys.argv[1])
+    #this is either Temp, Humidity, or Dew Point
+    plotAttribute = sys.argv[2]
     jobDate = jobsData.loc[job, 'Date']
     jobDescription = jobsData.loc[job, 'Description']
     plotTitle = f'{jobDate} Data ({jobDescription})'
@@ -109,6 +113,9 @@ if __name__ == "__main__":
     elif plotAttribute == 'Humidity':
         #Limits for RH
         plt.ylim([20,50])
+    elif plotAttribute == 'Dew Point':
+        #Limits for Dew Point
+        plt.ylim([0, 20])
     else:
         print('Plot attribute not recognized')
     plt.suptitle(plotTitle)
